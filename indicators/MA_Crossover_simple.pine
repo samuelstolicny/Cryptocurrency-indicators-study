@@ -1,0 +1,33 @@
+//@version=4
+study("Scalping MA Crossover", overlay=true)
+
+// Inputs
+fastLength = input(5, "Fast MA Period")
+slowLength = input(10, "Slow MA Period")
+rsiLength = input(14, "RSI Length")
+takeProfitPips = input(20, "Take Profit Pips")
+
+// Calculate MAs
+fastMA = sma(close, fastLength) 
+slowMA = sma(close, slowLength)
+
+// RSI 
+rsi = rsi(close, rsiLength)
+oversold = rsi < 30
+overbought = rsi > 70
+
+// Buy/Sell Logic
+uptrend = close > close[1]
+downtrend = close < close[1]
+buySignal = crossover(fastMA, slowMA) and uptrend and oversold
+sellSignal = crossunder(fastMA, slowMA) and downtrend and overbought
+
+// Plotting
+plot(fastMA, color=#2962FF)
+plot(slowMA, color=#FF6347)
+plotshape(buySignal, style=shape.triangleup, location=location.belowbar, color=color.green, size=size.small)
+plotshape(sellSignal, style=shape.triangledown, location=location.abovebar, color=color.red, size=size.small)
+
+// Take profit line
+takeProfit = strategy.opentrades.entry_price + (takeProfitPips * syminfo.mintick)
+plot(takeProfit, style=line, color=#00FF00, linewidth=2)
