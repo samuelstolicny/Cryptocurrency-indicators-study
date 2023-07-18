@@ -2,23 +2,16 @@
 study("Improved Scalping Indicator", overlay=true) 
 
 // Inputs
-fastLength = input(20, title="Fast MA") // 20 this worked good
-slowLength = input(40, title="Slow MA") // 40 
-
-//rsiLength = input(50, title="RSI Length")
+fastLength = input(20, title="Fast MA") 
+slowLength = input(40, title="Slow MA")
 
 // Additional filters
 priceOver200SMA = close > sma(close, 200)
 priceUnder200SMA = close < sma(close, 200)
-//macdhistogram = macd(close, 12, 26)
 
 // Trading conditions
-//longCondition = crossover(sma(close, fastLength), sma(close, slowLength)) and rsi(close, rsiLength) < 30 and priceOver200SMA
-//shortCondition = crossunder(sma(close, fastLength), sma(close, slowLength)) and rsi(close, rsiLength) > 70 and priceUnder200SMA
 longCondition = crossover(sma(close, fastLength), sma(close, slowLength)) and priceOver200SMA
 shortCondition = crossunder(sma(close, fastLength), sma(close, slowLength)) and priceUnder200SMA
-//longCondition = crossover(sma(close, fastLength), sma(close, slowLength)) and rsi(close, rsiLength) < 30 
-//shortCondition = crossunder(sma(close, fastLength), sma(close, slowLength)) and rsi(close, rsiLength) > 70
 
 // Long/short logic
 long = false
