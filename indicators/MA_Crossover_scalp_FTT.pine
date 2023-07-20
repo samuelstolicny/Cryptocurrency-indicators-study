@@ -5,38 +5,26 @@ study("Improved Scalping Indicator", overlay=true)
 fastLength = input(20, title="Fast MA") 
 slowLength = input(40, title="Slow MA")
 
+fastMA = ema(close, fastLength)
+slowMA = ema(close, slowLength)
+
 // Additional filters
 priceOver200SMA = close > sma(close, 200)
 priceUnder200SMA = close < sma(close, 200)
 
 // Trading conditions
-longCondition = crossover(sma(close, fastLength), sma(close, slowLength)) and priceOver200SMA
-shortCondition = crossunder(sma(close, fastLength), sma(close, slowLength)) and priceUnder200SMA
+longCondition = crossover(fastMA, slowMA) and priceOver200SMA
+shortCondition = crossunder(fastMA, slowMA) and priceUnder200SMA
 
-// Long/short logic
-long = false
-short = false
-if (longCondition)
-    long := true  
-if (shortCondition)
-    long := false
-    
-if (shortCondition)
-    short := true
-if (longCondition)   
-    short := false
-       
 // Plotting
-plot(sma(close, fastLength), color=#2962FF)
-plot(sma(close, slowLength), color=#FF6347)
+plot(ema(close, fastLength), color=#2962FF)
+plot(ema(close, slowLength), color=#FF6347)
+plot(ema(close, 200), color=#000000, linewidth = 2)
 
 // Buy signal
 plotshape(longCondition, style=shape.triangleup, location=location.belowbar, color=color.green, size=size.small)
 // Sell signal
 plotshape(shortCondition, style=shape.triangledown, location=location.abovebar, color=color.red, size=size.small)
-
-bgcolor(long ? color.green : na)
-bgcolor(short ? color.red : na)
 
 alertcondition(longCondition, title="Long Signal", message="Go Long")
 alertcondition(shortCondition, title="Short Signal", message="Go Short")
