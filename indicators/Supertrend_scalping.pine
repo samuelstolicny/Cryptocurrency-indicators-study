@@ -1,0 +1,43 @@
+//@version=4
+study("Supertrend Scalping", overlay=true)
+
+// Inputs
+factor = input(3, title="ATR Factor")
+atrLength = input(10, title="ATR Length") 
+
+// Variables
+var float supertrend = na
+
+// Supertrend
+atr = atr(atrLength)
+upper = hl2 + factor * atr
+lower = hl2 - factor * atr
+trend = 1
+trend := nz(trend[1], 1)
+supertrend := if close > upper 
+    lower
+else if close < lower
+    upper 
+else
+    supertrend[1]
+
+// Filters    
+priceOver200SMA = close > sma(close, 200)
+priceUnder200SMA = close < sma(close, 200)
+
+// Trading conditions
+longCondition = crossover(close, supertrend) and priceOver200SMA
+shortCondition = crossunder(close, supertrend) and priceUnder200SMA 
+
+// Plotting
+plot(supertrend, color=#2962FF, linewidth=2)
+plot(sma(close, 200), color=#000000, linewidth=2)
+
+// Buy signal 
+plotshape(longCondition, style=shape.triangleup, location=location.belowbar, color=color.green, size=size.small)
+
+// Sell signal
+plotshape(shortCondition, style=shape.triangledown, location=location.abovebar, color=color.red, size=size.small)
+
+alertcondition(longCondition, title="Long Signal", message="Go Long")  
+alertcondition(shortCondition, title="Short Signal", message="Go Short")
